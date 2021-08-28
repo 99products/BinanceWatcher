@@ -1,10 +1,18 @@
 import requests
 import logging
-from config import BINANCE_FLEXI_URL
+from config import FLEXIBLE_STAKING_URL, LOCKED_STAKING_URL
+
+logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 
 
-def connect():
-    response = requests.get(BINANCE_FLEXI_URL)
-    logging.info(response.json())
+def read_locked_staking():
+    logging.info('Reading Locked Staking info')
+    response = requests.get(LOCKED_STAKING_URL)
+    return response.json()
+
+
+def read_flexible_staking():
+    logging.info('Reading Flexible Staking info')
+    response = requests.get(FLEXIBLE_STAKING_URL)
     return response.json()
 
