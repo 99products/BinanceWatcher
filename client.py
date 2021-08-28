@@ -2,7 +2,7 @@ import requests
 import logging
 from config import FLEXIBLE_STAKING_URL, LOCKED_STAKING_URL
 
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 
 def read_locked_staking():

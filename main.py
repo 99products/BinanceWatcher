@@ -1,20 +1,24 @@
 import client
-from flask import Flask, request
+import requests
+import schedule
+import time
+from flask import Flask
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.executor import start_polling
-from config import bot_token
+from config import bot_token, bot_channel_url, interval
 import logging
 
 bot = Bot(bot_token)
 dp = Dispatcher(bot)
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
+app = Flask(__name__)
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
 
 @dp.message_handler(commands=['get'])
 async def get(message):
     data = get_available_assets()
-    await bot.send_message(message.chat.id, data)
+    await bot.send_message('@bwatch_test_channel', data)
 
 
 def get_available_assets():
@@ -44,12 +48,33 @@ def get_available_assets():
     if not is_available:
         available_asset += "None\n"
         is_available = False
-
     return available_asset
+
+
+@app.route('/', methods=["GET"])
+def say_hello():
+    return "Welcome to Binance Watcher!"
+
+
+def poll():
+    start_polling(dp, timeout=123)
+
+
+def send_update_to_channel():
+    logging.info('Sending update to telegram channel')
+    url = bot_channel_url.format(token=bot_token, channel='@bwatch_test_channel', message=get_available_assets())
+    response = requests.get(url)
+    logging.info('Response: ' + str(response))
+
+
+def schedule_checker():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 if __name__ == "__main__":
     logging.info('Starting Binance Watcher...')
-    print(get_available_assets())
-    start_polling(dp, timeout=123)
-
+    schedule.every(interval).minutes.do(send_update_to_channel)
+    schedule_checker()
+#    send_update_to_channel()
