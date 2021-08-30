@@ -3,4 +3,3 @@ Flask
 pyTelegramBotAPI~=3.8.3
 aiogram~=2.14.3
 deta~=1.0.0
-schedule~=1.1.0
